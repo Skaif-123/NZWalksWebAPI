@@ -1,0 +1,6 @@
+@NZWalksWebAPI_HostAddress = http://localhost:5051
+
+GET {{NZWalksWebAPI_HostAddress}}/api/Region/
+Accept: application/json
+
+###

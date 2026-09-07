@@ -1,7 +1,10 @@
-﻿namespace NZWalksWebAPI.Models.School
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NZWalksWebAPI.Models.School
 {
     public class Student
     {
+        [Key]
         public Guid StudentID { get; set; }
         public string StudentName { get; set; }
 

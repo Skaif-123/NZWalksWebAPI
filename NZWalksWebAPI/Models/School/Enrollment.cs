@@ -1,7 +1,10 @@
-﻿namespace NZWalksWebAPI.Models.School
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace NZWalksWebAPI.Models.School
 {
     public class Enrollment
     {
+        [Key]
         public Guid EnrollmentId { get; set; }// Primary key for the Enrollment table
 
         public Guid StudentId { get; set; } // Foreign key to the Student table

@@ -56,5 +56,31 @@ namespace NZWalksWebAPI.Controllers
         }
 
 
+
+
+        //Writing method GetById; to fetch by ID
+        [HttpGet]
+        [Route("{id:guid}")]
+        public IActionResult GetById([FromRoute]Guid id)
+        {
+            //this is use to object base on Id
+            //below find Method is only used when we have primary key with us
+            //var Student = dbContext.Students.Find(id);
+
+           
+
+            //This below method we can use we any field of sql not neccessary primary field
+            //As you can see x.[column name]==[value which we are passing]
+            //Below is a better method and is recommended...........
+            var Student = dbContext.Students.FirstOrDefault(x=>x.StudentID==id);
+
+            if (Student == null)
+            {
+                //returns 404 code if not found
+                return NotFound();
+            }
+            return Ok(Student);
+        }
+
     }
 }

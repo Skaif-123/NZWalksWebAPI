@@ -9,19 +9,35 @@ namespace NZWalksWebAPI.Controllers
     [ApiController]
     public class RegionController : ControllerBase
     {
-        private readonly NZWalksDBContext _dbcontext;
-        public RegionController(NZWalksDBContext dBContext)
+        //practicing for Regions GET API using dbcontext
+        private readonly NZWalksDBContext dbContext;
+
+        public RegionController(NZWalksDBContext dbContext)
         {
-            _dbcontext = dBContext;   
+            this.dbContext = dbContext;
         }
 
 
         [HttpGet]
-        public IActionResult GetAll()
-        {
-            var regions = _dbcontext.Regions.ToList();  
-  
+        public IActionResult GetAll() {
+
+            var regions = dbContext.Regions.ToList();
+
             return Ok(regions);
         }
+
+        [HttpGet]
+        public IActionResult GetById(Guid id)
+        {
+            var region = dbContext.Regions.FirstOrDefault(x=>x.Id==id);
+            if (region == null)
+            {
+                //will return 404 
+                return NotFound();
+            }
+
+            return Ok(region);
+        }
+
     }
 }

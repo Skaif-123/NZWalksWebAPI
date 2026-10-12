@@ -1,4 +1,6 @@
-﻿namespace NZWalksWebAPI.Models
+﻿using NZWalksWebAPI.Models.NZWalks;
+
+namespace NZWalksWebAPI.Models
 {
     public class Walks
     {

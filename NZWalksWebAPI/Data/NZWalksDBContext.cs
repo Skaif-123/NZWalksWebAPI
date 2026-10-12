@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
-
 using NZWalksWebAPI.Models;
+using NZWalksWebAPI.Models.NZWalks;
 
 namespace NZWalksWebAPI.Data
 {

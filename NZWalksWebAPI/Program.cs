@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 builder.Services.AddControllers();
+// Register Swagger / OpenAPI generator services
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
 
 
@@ -26,10 +29,22 @@ builder.Services.AddDbContext<SchoolCoursesDBContext>(options => {
 });
 
 
+builder.Services.AddDbContext<VesselDBContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("VesselDB"));
+});
+
+
 
 var app = builder.Build();
 
 
+// Configure the HTTP request pipeline to use Swagger in development (or globally)
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(); // This renders the interactive Swagger UI web page
+}
 
 app.UseHttpsRedirection();
 

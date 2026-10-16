@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NZWalksWebAPI.Data;
+using NZWalksWebAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<NZWalksDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("NZWalks"));
 });
 
+builder.Services.AddScoped<IVesselRepository, VesselRepository>();
 
 // Add the SchoolCoursesDBContext to the service container
 // This allows the application to use the SchoolCoursesDBContext for database operations related to school courses.

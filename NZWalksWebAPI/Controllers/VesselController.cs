@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using NZWalksWebAPI.Data;
 using NZWalksWebAPI.Dtos.Vessel;
 using NZWalksWebAPI.Models.Vessels;
+using NZWalksWebAPI.Repository;
 
 namespace NZWalksWebAPI.Controllers
 {
@@ -12,16 +13,18 @@ namespace NZWalksWebAPI.Controllers
     public class VesselController : ControllerBase
     {
         //DBContext  added
-        private readonly VesselDBContext _context;
-        public VesselController(VesselDBContext context)
+
+        private readonly IVesselRepository _vesselRepository;
+        public VesselController(VesselDBContext context,IVesselRepository vesselRepository)
         {
-            _context = context;
+           
+            _vesselRepository = vesselRepository;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var vesselDomain = await _context.Vessels.ToListAsync();
+            var vesselDomain = await _vesselRepository.GetAllAsync();
 
             var VesselDto = new List<GetVesselsRequestDto>();
 
@@ -43,7 +46,7 @@ namespace NZWalksWebAPI.Controllers
         [HttpGet("{id:Guid}")]
         public async Task<IActionResult> GetById([FromRoute] Guid id)
         {
-            var VesselDomain = await _context.Vessels.FirstOrDefaultAsync(x => x.Id == id);
+            var VesselDomain = await _vesselRepository.GetByIdAsync(id);
             if (VesselDomain is null)
             {
                 return NotFound();
@@ -75,15 +78,15 @@ namespace NZWalksWebAPI.Controllers
                 DWT = createVesselDto.DWT
             };
 
-            await _context.Vessels.AddAsync(vesselDomain);
-            await _context.SaveChangesAsync();
+            var createdVessel = await _vesselRepository.createVesselAsync(vesselDomain);
+
 
             var displayVessel = new GetVesselsRequestDto
             {
-                IMO_Number = vesselDomain.IMO_Number,
-                Vessel_Name = vesselDomain.Vessel_Name,
-                Call_Sign = vesselDomain.Call_Sign,
-                DWT = vesselDomain.DWT
+                IMO_Number = createdVessel.IMO_Number,
+                Vessel_Name = createdVessel.Vessel_Name,
+                Call_Sign = createdVessel.Call_Sign,
+                DWT = createdVessel.DWT
             };
 
 
@@ -92,19 +95,17 @@ namespace NZWalksWebAPI.Controllers
 
 
 
-        [HttpPut("{IMO_Number:string}")]
+        [HttpPut("{IMO_Number}")]
         public async Task<IActionResult> UpdateVessel([FromRoute] string IMO_Number, [FromBody] UpdateVesselDto updateVesselDto)
         {
-            var vesselDomain = await _context.Vessels.FirstOrDefaultAsync(x => x.IMO_Number == IMO_Number);
+            var vesselDomain = await _vesselRepository.updateVesselAsync(IMO_Number, updateVesselDto);
+            
             if (vesselDomain is null)
             {
                 return NotFound();
             }
 
-            vesselDomain.Vessel_Name = updateVesselDto.Vessel_Name;
-            vesselDomain.Call_Sign = updateVesselDto.Call_Sign;
-            vesselDomain.DWT = updateVesselDto.DWT;
-            await _context.SaveChangesAsync();
+            
             var displayVessel = new GetVesselsRequestDto
             {
                 IMO_Number = vesselDomain.IMO_Number,
@@ -118,17 +119,14 @@ namespace NZWalksWebAPI.Controllers
 
 
 
-        [HttpDelete("{IMO_Number:string}")]
+        [HttpDelete("{IMO_Number}")]
         public async Task<IActionResult> DeleteVessel([FromRoute] string IMO_Number)
         {
-            var vesselDomain = await _context.Vessels.FirstOrDefaultAsync(x => x.IMO_Number == IMO_Number);
+            var vesselDomain = await _vesselRepository.deleteVesselAsync(IMO_Number);
             if (vesselDomain is null)
             {
                 return NotFound();
             }
-
-            _context.Vessels.Remove(vesselDomain);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

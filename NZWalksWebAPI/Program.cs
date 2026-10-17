@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NZWalksWebAPI.Data;
+using NZWalksWebAPI.Mappings;
 using NZWalksWebAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -36,6 +37,9 @@ builder.Services.AddDbContext<VesselDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("VesselDB"));
 });
 
+
+    builder.Services.AddAutoMapper(cfg => { }, typeof(AutoMapperProfiles).Assembly); // Register AutoMapper and specify the assembly containing the mapping profiles)
+        
 
 
 var app = builder.Build();

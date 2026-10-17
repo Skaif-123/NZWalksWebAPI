@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NZWalksWebAPI.Data;
@@ -15,10 +16,13 @@ namespace NZWalksWebAPI.Controllers
         //DBContext  added
 
         private readonly IVesselRepository _vesselRepository;
-        public VesselController(VesselDBContext context,IVesselRepository vesselRepository)
+        private readonly IMapper mapper;
+
+        public VesselController(IVesselRepository vesselRepository,IMapper mapper)
         {
            
             _vesselRepository = vesselRepository;
+            this.mapper = mapper;
         }
 
         [HttpGet]
@@ -26,21 +30,7 @@ namespace NZWalksWebAPI.Controllers
         {
             var vesselDomain = await _vesselRepository.GetAllAsync();
 
-            var VesselDto = new List<GetVesselsRequestDto>();
-
-
-            foreach (var vessels in vesselDomain)
-            {
-                VesselDto.Add(new GetVesselsRequestDto
-                {
-                    IMO_Number = vessels.IMO_Number,
-                    Vessel_Name = vessels.Vessel_Name,
-                    Call_Sign = vessels.Call_Sign,
-                    DWT = vessels.DWT
-                });
-            }
-
-            return Ok(VesselDto);
+            return Ok(mapper.Map<List<GetVesselsRequestDto>>(vesselDomain));
         }
 
         [HttpGet("{id:Guid}")]
@@ -52,17 +42,7 @@ namespace NZWalksWebAPI.Controllers
                 return NotFound();
             }
 
-
-            var DisplayVessel = new GetVesselsRequestDto
-            {
-                Call_Sign = VesselDomain.Call_Sign,
-                IMO_Number = VesselDomain.IMO_Number,
-                Vessel_Name = VesselDomain.Vessel_Name,
-                DWT = VesselDomain.DWT
-
-            };
-
-            return Ok(DisplayVessel);
+            return Ok(mapper.Map<GetVesselsRequestDto>(VesselDomain));
         }
 
 
@@ -70,27 +50,11 @@ namespace NZWalksWebAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateVessel([FromBody] CreateVesselDto createVesselDto)
         {
-            var vesselDomain = new Vessel
-            {
-                IMO_Number = createVesselDto.IMO_Number,
-                Vessel_Name = createVesselDto.Vessel_Name,
-                Call_Sign = createVesselDto.Call_Sign,
-                DWT = createVesselDto.DWT
-            };
+            var vesselDomain =mapper.Map<Vessel>(createVesselDto);
 
             var createdVessel = await _vesselRepository.createVesselAsync(vesselDomain);
 
-
-            var displayVessel = new GetVesselsRequestDto
-            {
-                IMO_Number = createdVessel.IMO_Number,
-                Vessel_Name = createdVessel.Vessel_Name,
-                Call_Sign = createdVessel.Call_Sign,
-                DWT = createdVessel.DWT
-            };
-
-
-            return Ok(displayVessel);
+            return Ok(mapper.Map<GetVesselsRequestDto>(createdVessel));
         }
 
 
@@ -105,15 +69,7 @@ namespace NZWalksWebAPI.Controllers
                 return NotFound();
             }
 
-            
-            var displayVessel = new GetVesselsRequestDto
-            {
-                IMO_Number = vesselDomain.IMO_Number,
-                Vessel_Name = vesselDomain.Vessel_Name,
-                Call_Sign = vesselDomain.Call_Sign,
-                DWT = vesselDomain.DWT
-            };
-            return Ok(displayVessel);
+                return Ok(mapper.Map<GetVesselsRequestDto>(vesselDomain));
         }
 
 
